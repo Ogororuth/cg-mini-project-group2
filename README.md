@@ -4,7 +4,7 @@ The game features a paddle, a ball, and a destructible wall of blocks. The goal 
 
 MAIN CONCEPTS
 
-Wall of Blocks*: The blocks are arranged in a grid and have varying strengths. The blocks' colors change depending on their strength.
+Wall of Blocks: The blocks are arranged in a grid and have varying strengths. The blocks' colors change depending on their strength.
 Paddle Control: The player controls the paddle using the left and right arrow keys.
 Ball Movement: The ball bounces off the paddle and walls. If the ball hits a block, the block's strength reduces.
 Game Over / Win Conditions: The game ends when the ball falls below the paddle or when all blocks are destroyed.
