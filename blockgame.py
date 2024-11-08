@@ -85,3 +85,80 @@ class wall():
                     block_col = block_red
                 pygame.draw.rect(screen, block_col, block[0])
                 pygame.draw.rect(screen, bg, (block[0]), 2)
+# paddle class
+class paddle():
+    def _init_(self):
+        self.reset()
+
+    def move(self):
+        # reset movement direction
+        self.direction = 0
+        key = pygame.key.get_pressed()
+        if key[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.speed
+            self.direction = -1
+        if key[pygame.K_RIGHT] and self.rect.right < screen_width:
+            self.rect.x += self.speed
+            self.direction = 1
+
+    def draw(self):
+        pygame.draw.rect(screen, paddle_col, self.rect)
+        pygame.draw.rect(screen, paddle_outline, self.rect, 3)
+
+    def reset(self):
+        # define paddle variables
+        self.height = 20
+        self.width = int(screen_width / cols)
+        self.x = int((screen_width / 2) - (self.width / 2))
+        self.y = screen_height - (self.height * 2)
+        self.speed = 10
+        self.rect = Rect(self.x, self.y, self.width, self.height)
+        self.direction = 0
+
+
+# ball class
+class game_ball():
+    def _init_(self, x, y):
+        self.reset(x, y)
+
+    def move(self):
+
+        # collision threshold
+        collision_thresh = 5
+
+        # start off with the assumption that the wall has been destroyed completely
+        wall_destroyed = 1
+        row_count = 0
+        for row in wall.blocks:
+            item_count = 0
+            for item in row:
+                # check collision
+                if self.rect.colliderect(item[0]):
+                    # check if collision was from above
+                    if abs(self.rect.bottom - item[0].top) < collision_thresh and self.speed_y > 0:
+                        self.speed_y *= -1
+                    # check if collision was from below
+                    if abs(self.rect.top - item[0].bottom) < collision_thresh and self.speed_y < 0:
+                        self.speed_y *= -1
+                    # check if collision was from left
+                    if abs(self.rect.right - item[0].left) < collision_thresh and self.speed_x > 0:
+                        self.speed_x *= -1
+                    # check if collision was from right
+                    if abs(self.rect.left - item[0].right) < collision_thresh and self.speed_x < 0:
+                        self.speed_x *= -1
+                    # reduce the block's strength by doing damage to it
+                    if wall.blocks[row_count][item_count][1] > 1:
+                        wall.blocks[row_count][item_count][1] -= 1
+                    else:
+                        wall.blocks[row_count][item_count][0] = (0, 0, 0, 0)
+
+                # check if block still exists, in whcih case the wall is not destroyed
+                if wall.blocks[row_count][item_count][0] != (0, 0, 0, 0):
+                    wall_destroyed = 0
+                # increase item counter
+                item_count += 1
+            # increase row counter
+            row_count += 1
+        # after iterating through all the blocks, check if the wall is destroyed
+        if wall_destroyed == 1:
+            self.game_over = 1
