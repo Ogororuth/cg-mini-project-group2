@@ -1,4 +1,3 @@
-
 GAME DESCRIPTION
 The game features a paddle, a ball, and a destructible wall of blocks. The goal is to bounce the ball off the paddle and break all the blocks. The game ends when the ball falls below the paddle.
 
