@@ -11,12 +11,13 @@ Start Game: The player can click anywhere to start the game after a win or loss.
 
 
 MACHINE REQUIREMENTS AND INSTRUCTIONS
--  install Python 3.x
+- install Python 3.9.12
 - install Pygame library
 
 1. Install Python 3 if you don't already have it.
 2. Install the Pygame library:
-    `bash
+
+    ```
     pip install pygame
     ```
 
