@@ -27,13 +27,7 @@ INSTRUCTIONS OF THE GAME
 - If the ball falls below the paddle, you lose the game.
 - If all blocks are destroyed, you win the game.
 
-Code Breakdown
--wall class: Defines the blocks in the game, including their position, strength, and color. Blocks are destroyed when hit by the ball.
-paddle class: Controls the paddle's position and movement using the keyboard (left and right arrows).
--game_ball class: Controls the ball’s movement, collision detection, and interaction with the paddle and blocks. The ball bounces off surfaces and changes its direction accordingly.
--Main Game Loop: The game runs inside a while loop where objects are drawn, movements are updated, and collisions are checked every frame.
-
- How to Start AND ENJOY THE GAME
+How to Start AND ENJOY THE GAME
 
 1. After running the game, click the right or left pad on the screen to start.
 2. Use the arrow keys to move the paddle and break all the blocks.
