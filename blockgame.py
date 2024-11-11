@@ -86,7 +86,7 @@ class Paddle:
         self.height = 20
         self.width = int(screen_width / cols)
         self.x = int((screen_width / 2) - (self.width / 2))
-self.y = screen_height - (self.height * 2)
+        self.y = screen_height - (self.height * 2)
         self.speed = 10
         self.rect = Rect(self.x, self.y, self.width, self.height)
 
@@ -175,3 +175,90 @@ def game_loop():
     while run:
         clock.tick(fps)
         screen.fill(bg)
+         wall.draw_wall()
+        player_paddle.draw()
+        ball.draw()
+
+        # Display score and high score
+        draw_text(f'Score: {score}', font, text_col, 5, 5)
+        display_high_score()
+
+        if live_ball:
+            player_paddle.move()
+            game_over = ball.move()
+            if game_over != 0:
+                live_ball = False
+
+        # Display game messages
+        if not live_ball and game_over != 0:
+            if game_over == -1:
+                draw_text("GAME OVER! Press 'R' to Restart", font, text_col, 150, screen_height // 2)
+            elif game_over == 1:
+                draw_text("YOU WON! Press 'N' for Next Level", font, text_col, 150, screen_height // 2)
+
+            # Check for restart or next level
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r and game_over == -1:  # Restart after losing
+                        game_over = 0
+                        score = 0
+                        game_loop()
+                    elif event.key == pygame.K_n and game_over == 1:  # Next level after winning
+                        current_level += 1
+                        if current_level > 3:
+                            current_level = 1  # Restart from level 1
+                        game_over = 0
+                        score = 0
+                        game_loop()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN and not live_ball:
+                live_ball = True
+
+        pygame.display.update()
+    pygame.quit()
+
+
+# Initialize game objects
+wall = Wall()
+player_paddle = Paddle()
+ball = Ball(player_paddle.rect.x + (player_paddle.width // 2), player_paddle.rect.y - player_paddle.height)
+
+# Ask for level selection
+def ask_for_level():
+    global current_level
+    level_bg = (255, 255, 204)  # Light yellow background for level selection screen
+    level_text_col = (0, 0, 0)  # Use black text for better contrast
+
+    while True:
+        screen.fill(level_bg)  # Fill screen with bright background
+        draw_text("BREAKOUT GAME", font, text_col, 150, 150)
+        draw_text("Select Difficulty Level", font, text_col, 150, 250)
+        draw_text("1. Easy", font, text_col, 200, 300)
+        draw_text("2. Intermediate", font, text_col, 200, 350)
+        draw_text("3. Hard", font, text_col, 200, 400)
+
+        pygame.display.update()  # Refresh the display with the text
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    current_level = 1
+                    game_loop()
+                elif event.key == pygame.K_2:
+                    current_level = 2
+                    game_loop()
+                elif event.key == pygame.K_3:
+                    current_level = 3
+                    game_loop()
+
+
+# Start the game
+ask_for_level()
+pygame.quit()
