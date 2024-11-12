@@ -31,10 +31,13 @@ MACHINE REQUIREMENTS AND INSTRUCTIONS
     ```
     pip install pygame
     ```
-Clone the repository:
+3. Clone the repository:
 ```
+https://github.com/Ogororuth/cg-mini-project-group2.git
+```
+4. Navigate the code, copy the code from blockgame.py, click run and enjoy playing
 
-```
+
 INSTRUCTIONS OF THE GAME
 - Use the left or right arrow keys to move the paddle.
 - The goal is to destroy all the blocks by bouncing the ball off the paddle.
