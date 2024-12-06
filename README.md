@@ -61,7 +61,14 @@ git clone https://github.com/Ogororuth/cg-mini-project-group2.git
 Open the index.html file in a WebGL-compatible browser (e.g., Chrome, Firefox).
 Play directly from the browser—no additional setup required!
 
-**3. ACKNOWLEDGEMENTS**
+**3. FUTURE ADDITIONS**
+
+We aim to achieve even a greater development of the games
+- Mobile phone support for the game
+- Even more obstacles and powerups
+- Themes and modes- like under the sea/ christmas modes etc.
+
+**4. ACKNOWLEDGEMENTS**
 - Original breakout game developers(https://github.com/MatthewTamYT/Breakout.git) - for providing game base code.
 - WEBGL community- robust documentation on webgl development.
 - Groupmates- valued contribution.
