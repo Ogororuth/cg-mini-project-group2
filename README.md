@@ -58,6 +58,7 @@ Clone the repository:
 ```
 git clone https://github.com/Ogororuth/cg-mini-project-group2.git
 ```
+Have XAMPP INSTALLED
 Ensure the project directory structure is correct:
 Create a folder named breakout in your htdocs directory (if using a local server).
 Inside the breakout folder:
