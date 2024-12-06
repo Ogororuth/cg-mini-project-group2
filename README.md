@@ -57,7 +57,12 @@ Getting Started
 Clone the repository:
 ```
 git clone https://github.com/Ogororuth/cg-mini-project-group2.git
-``` 
+```
+Ensure the project directory structure is correct:
+Create a folder named breakout in your htdocs directory (if using a local server).
+Inside the breakout folder:
+Place the assets folder.
+Place the index.html file.
 Open the index.html file in a WebGL-compatible browser (e.g., Chrome, Firefox).
 Play directly from the browser—no additional setup required!
 
