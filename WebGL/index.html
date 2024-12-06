@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebGL Catch Game</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: 'Comic Sans MS', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle, #ff9a9e, #fad0c4, #fad0c4);
+      color: #fff;
+      overflow: hidden;
+    }
+
+    #welcome-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #welcome-container h1 {
+      font-size: 4em;
+      margin: 0.2em 0;
+      text-shadow: 3px 3px #ff6f91;
+    }
+
+    #welcome-container p {
+      font-size: 1.4em;
+      margin: 0.5em 0;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 10px;
+    }
+
+    #start-button {
+      padding: 15px 30px;
+      font-size: 1.5em;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #ff6f91, #ff9671, #ffc75f);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    canvas, #scoreboard, #game-over {
+      display: none;
+    }
+
+    #scoreboard {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.5em;
+      color: #fff;
+    }
+
+    #game-over {
+      font-size: 2em;
+      color: #ff6f91;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #score-history {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div id="welcome-container">
+    <h1>🎮 WebGL Catch Game 🎉</h1>
+    <p>Move the green basket to avoid red blocks and gain points! Use the arrow keys to move your basket. Good luck!</p>
+    <button id="start-button">🚀 Start Game!</button>
+  </div>
+
+  <div id="scoreboard">Score: 0 | Lives: 3</div>
+  <canvas id="webglCanvas" width="800" height="600"></canvas>
+  <div id="game-over">
+    <p>Game Over! Your score: <span id="final-score">0</span></p>
+    <div id="score-history">
+      <h3>Score History:</h3>
+      <ul id="history-list"></ul>
