@@ -1,147 +1,147 @@
 import pygame
-from pygame.locals import *
+import sys
+import random
 
+# Initialize Pygame
 pygame.init()
 
-# Screen setup
-screen_width = 600
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Breakout')
+# -------------------- CONSTANTS --------------------
+# Screen dimensions
+WIDTH, HEIGHT = 800, 600
 
-# Define fonts and colors
-font = pygame.font.SysFont('Constantia', 30)
-bg = (234, 218, 184)
-block_red = (242, 85, 96)
-block_green = (86, 174, 87)
-block_blue = (69, 177, 232)
-paddle_col = (142, 135, 123)
-paddle_outline = (100, 100, 100)
-text_col = (78, 81, 139)
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
 
-# Game variables
-cols = 6
-rows = 6
+# Initialize Pygame
+pygame.init()
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("BREAKOUT GAME")
 clock = pygame.time.Clock()
-fps = 60
-live_ball = False
-game_over = 0
-ball_speed_increase = 1
-score = 0
-current_level = 1
-high_score = 0  # Track the high score
 
-# Draw text function
-def draw_text(text, font, text_col, x, y):
-    img = font.render(text, True, text_col)
-    screen.blit(img, (x, y))
+# Define the size of the falling obstacles
+obstacle_width = 40  # Adjust the width as needed
+obstacle_height = 40  # Adjust the height as needed
 
-# Wall class
-class Wall:
-    def _init_(self):
-        self.width = screen_width // cols
-        self.height = 50
+# Fonts
+try:
+    title_font = pygame.font.Font("arial.ttf", 80)
+    sub_font = pygame.font.Font("arial.ttf", 40)
+    hud_font = pygame.font.Font("arial.ttf", 30)
+except FileNotFoundError:
+    title_font = pygame.font.SysFont("arial", 80)
+    sub_font = pygame.font.SysFont("arial", 40)
+    hud_font = pygame.font.SysFont("arial", 30)
 
-    def create_wall(self):
-        global score
-        score = 0
-        self.blocks = []
-        for row in range(rows):
-            block_row = []
-            for col in range(cols):
-                block_x = col * self.width
-                block_y = row * self.height
-                rect = pygame.Rect(block_x, block_y, self.width, self.height)
-                strength = 3 if row < 2 else 2 if row < 4 else 1
-                block_row.append([rect, strength])
-            self.blocks.append(block_row)
+# Sounds
+background_music = pygame.mixer.Sound("start.wav")
+win_sound = pygame.mixer.Sound("win.wav")
+lose_sound = pygame.mixer.Sound("lose.wav")
 
-    def draw_wall(self):
-        for row in self.blocks:
-            for block in row:
-                color = block_blue if block[1] == 3 else block_green if block[1] == 2 else block_red
-                pygame.draw.rect(screen, color, block[0])
-                pygame.draw.rect(screen, bg, block[0], 2)
+# Levels configuration
+levels = {
+    "easy": {"paddle_width": 150, "ball_speed": 5.5, "lives": 5},
+    "intermediate": {"paddle_width": 120, "ball_speed": 6.5, "lives": 4},
+    "hard": {"paddle_width": 100, "ball_speed": 7, "lives": 3, "time_limit": 60},
+}
 
-# Paddle class
-class Paddle:
-    def _init_(self):
-        self.reset()
+# Background music state
+background_music_playing = False  # Initialize background music flag
 
-    def move(self):
-        self.direction = 0
-        key = pygame.key.get_pressed()
-        if key[K_LEFT] and self.rect.left > 0:
-            self.rect.x -= self.speed
-            self.direction = -1
-        if key[K_RIGHT] and self.rect.right < screen_width:
-            self.rect.x += self.speed
-            self.direction = 1
+# -------------------- GAME BUILD --------------------
+# Ball and paddle properties
+ball_radius = 8
+ball_x, ball_y = 0, 0
+ball_speed_x, ball_speed_y = 0, 0
+ball_moving = False
+paddle_speed= 30
 
-    def draw(self):
-        pygame.draw.rect(screen, paddle_col, self.rect)
-        pygame.draw.rect(screen, paddle_outline, self.rect, 3)
+# Initialize paddle and ball
+paddle_x, paddle_y, paddle_width, paddle_height = 0, HEIGHT - 60, 150, 15
 
-    def reset(self):
-        self.height = 20
-        self.width = int(screen_width / cols)
-        self.x = int((screen_width / 2) - (self.width / 2))
-        self.y = screen_height - (self.height * 2)
-        self.speed = 10
-        self.rect = Rect(self.x, self.y, self.width, self.height)
+lives, score, current_level = 0, 0, None
+blocks = []
+phantom_blocks = []
+time_remaining = 0
 
-# Ball class
-class Ball:
-    def _init_(self, x, y):
-        self.reset(x, y)
+# Block properties
+block_width = WIDTH // 10 - 5
+block_height = 20
 
-    def move(self):
-        global score
-        collision_thresh = 5
-        wall_destroyed = True
+# Functions
 
-        for row in wall.blocks:
-            for block in row:
-                if self.rect.colliderect(block[0]):
-                    if abs(self.rect.bottom - block[0].top) < collision_thresh or abs(self.rect.top - block[0].bottom) < collision_thresh:
-                        self.speed_y *= -1
-                    elif abs(self.rect.right - block[0].left) < collision_thresh or abs(self.rect.left - block[0].right) < collision_thresh:
-                        self.speed_x *= -1
-                    if block[1] > 1:
-                        block[1] -= 1
-                    else:
-                        block[0] = (0, 0, 0, 0)
-                    score += 10
+def draw_text(text, font, color, x, y, centered=False):
+    rendered_text = font.render(text, True, color)
+    text_rect = rendered_text.get_rect()
+    if centered:
+        text_rect.center = (x, y)
+    else:
+        text_rect.topleft = (x, y)
+    screen.blit(rendered_text, text_rect)
 
-                if block[0] != (0, 0, 0, 0):
-                    wall_destroyed = False
+def create_blocks(level):
+    blocks = []
+    horizontal_gap = 4  # Horizontal gap between blocks
+    vertical_gap = 4    # Vertical gap between rows
 
-        if wall_destroyed:
-            self.game_over = 1
+    # Adjust block size based on level
+    if level == "easy":
+        block_width = WIDTH // 6  # Larger blocks for easy (6 blocks horizontally)
+        block_height = 40  # Larger height for easy
+        rows = 4  # 4 rows of blocks
+    elif level == "intermediate":
+        block_width = WIDTH // 8  # Medium-sized blocks for intermediate (8 blocks horizontally)
+        block_height = 30  # Medium height
+        rows = 6  # 6 rows of blocks
+    else:  # hard level
+        block_width = WIDTH // 12  # Smaller blocks for hard (12 blocks horizontally)
+        block_height = 20  # Smaller height for hard
+        rows = 8  # 8 rows of blocks
 
-        if self.rect.left < 0 or self.rect.right > screen_width:
-            self.speed_x *= -1
-        if self.rect.top < 0:
-            self.speed_y *= -1
-        if self.rect.bottom > screen_height:
-            self.game_over = -1
+    # Calculate the number of columns based on the width
+    columns = WIDTH // block_width
 
-        if self.rect.colliderect(player_paddle.rect):
-            if abs(self.rect.bottom - player_paddle.rect.top) < collision_thresh:
-                self.speed_y *= -1
-                self.speed_x += player_paddle.direction
-                self.speed_x = max(min(self.speed_x, self.speed_max), -self.speed_max)
+    # Create the blocks and their positions
+    for row in range(rows):
+        for col in range(columns):
+            x_pos = col * (block_width + horizontal_gap)  # Add horizontal gap
+            y_pos = row * (block_height + vertical_gap)  # Add vertical gap
+            block_rect = pygame.Rect(x_pos, y_pos, block_width, block_height)
+            blocks.append({"rect": block_rect, "score": 10})  # Each block has a score value
 
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-        return self.game_over
+    return blocks
 
-    def draw(self):
-        pygame.draw.circle(screen, paddle_col, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
-        pygame.draw.circle(screen, paddle_outline, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad, 3)
 
-    def reset(self, x, y):
-        self.ball_rad = 10
+
+
+
+def game_intro():
+    global background_music_playing
+    if not background_music_playing:
+        background_music.play(-1)  # Loop the background music throughout the game
+        background_music_playing = True  # Mark that the background music is playing
+
+    screen.fill(BLACK)
+    draw_text("BREAKOUT GAME", title_font, GREEN, WIDTH // 2, HEIGHT // 3, centered=True)
+    draw_text("Press SPACE to Start", sub_font, WHITE, WIDTH // 2, HEIGHT // 2, centered=True)
+    pygame.display.flip()
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    waiting = False  # Proceed to the game loop
+
+def level_selection():
+    """Allow player to select game level."""
+    global current_level, lives, paddle_width
+    screen.fill(BLACK)
         self.rect = Rect(x - self.ball_rad, y, self.ball_rad * 2, self.ball_rad * 2)
         self.speed_x = 4
         self.speed_y = -4
