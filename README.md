@@ -63,7 +63,7 @@ Play directly from the browser—no additional setup required!
 
 **3. FUTURE ADDITIONS**
 
-We aim to achieve even a greater development of the games
+We aim to achieve even a greater development of the games and we welcome to any contributions and modifications
 - Mobile phone support for the game
 - Even more obstacles and powerups
 - Themes and modes- like under the sea/ christmas modes etc.
