@@ -142,123 +142,148 @@ def level_selection():
     """Allow player to select game level."""
     global current_level, lives, paddle_width
     screen.fill(BLACK)
-        self.rect = Rect(x - self.ball_rad, y, self.ball_rad * 2, self.ball_rad * 2)
-        self.speed_x = 4
-        self.speed_y = -4
-        self.speed_max = 5
-        self.game_over = 0
-
-# Level selection
-def select_level(level):
-    global rows, ball_speed_increase
-    if level == 1:
-        rows, ball_speed_increase = 6, 1
-    elif level == 2:
-        rows, ball_speed_increase = 10, 1.3
-    elif level == 3:
-        rows, ball_speed_increase = 14, 1.6
-
-# Display high score
-def display_high_score():
-    global high_score
-    draw_text(f'High Score: {high_score}', font, text_col, 5, 40)
-
-# Game loop
-def game_loop():
-    global live_ball, game_over, score, current_level, high_score
-    select_level(current_level)
-    wall.create_wall()
-    player_paddle.reset()
-    ball.reset(player_paddle.rect.x + (player_paddle.width // 2), player_paddle.rect.y - player_paddle.height)
-
-    run = True
-    while run:
-        clock.tick(fps)
-        screen.fill(bg)
-         wall.draw_wall()
-        player_paddle.draw()
-        ball.draw()
-
-        # Display score and high score
-        draw_text(f'Score: {score}', font, text_col, 5, 5)
-        display_high_score()
-
-        if live_ball:
-            player_paddle.move()
-            game_over = ball.move()
-            if game_over != 0:
-                live_ball = False
-
-        # Display game messages
-        if not live_ball and game_over != 0:
-            if game_over == -1:
-                draw_text("GAME OVER! Press 'R' to Restart", font, text_col, 150, screen_height // 2)
-            elif game_over == 1:
-                draw_text("YOU WON! Press 'N' for Next Level", font, text_col, 150, screen_height // 2)
-
-            # Check for restart or next level
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    run = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_r and game_over == -1:  # Restart after losing
-                        game_over = 0
-                        score = 0
-                        game_loop()
-                    elif event.key == pygame.K_n and game_over == 1:  # Next level after winning
-                        current_level += 1
-                        if current_level > 3:
-                            current_level = 1  # Restart from level 1
-                        game_over = 0
-                        score = 0
-                        game_loop()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN and not live_ball:
-                live_ball = True
-
-        pygame.display.update()
-    pygame.quit()
-
-
-# Initialize game objects
-wall = Wall()
-player_paddle = Paddle()
-ball = Ball(player_paddle.rect.x + (player_paddle.width // 2), player_paddle.rect.y - player_paddle.height)
-
-# Ask for level selection
-def ask_for_level():
-    global current_level
-    level_bg = (255, 255, 204)  # Light yellow background for level selection screen
-    level_text_col = (0, 0, 0)  # Use black text for better contrast
+       draw_text("Choose a Level:", title_font, WHITE, WIDTH // 2, HEIGHT // 3, centered=True)
+    draw_text("1 - Easy", sub_font, GREEN, WIDTH // 2, HEIGHT // 2, centered=True)
+    draw_text("2 - Intermediate", sub_font, GREEN, WIDTH // 2, HEIGHT // 2 + 50, centered=True)
+    draw_text("3 - Hard", sub_font, GREEN, WIDTH // 2, HEIGHT // 2 + 100, centered=True)
+    pygame.display.flip()
 
     while True:
-        screen.fill(level_bg)  # Fill screen with bright background
-        draw_text("BREAKOUT GAME", font, text_col, 150, 150)
-        draw_text("Select Difficulty Level", font, text_col, 150, 250)
-        draw_text("1. Easy", font, text_col, 200, 300)
-        draw_text("2. Intermediate", font, text_col, 200, 350)
-        draw_text("3. Hard", font, text_col, 200, 400)
-
-        pygame.display.update()  # Refresh the display with the text
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    current_level = 1
-                    game_loop()
+                    current_level = "easy"
                 elif event.key == pygame.K_2:
-                    current_level = 2
-                    game_loop()
+                    current_level = "intermediate"
                 elif event.key == pygame.K_3:
-                    current_level = 3
-                    game_loop()
+                    current_level = "hard"
+                if current_level:
+                    lives = levels[current_level]["lives"]
+                    paddle_width = levels[current_level]["paddle_width"]
+                    return
+
+def game_over(won=False, score=0):
+    """Display game over screen and handle retry logic."""
+    global background_music_playing
+    pygame.mixer.Sound.stop(background_music )
+    pygame.mixer.Sound.play(win_sound if won else lose_sound)
+    screen.fill(BLACK)
+
+    if won:
+        draw_text("YOU WON!", title_font, GREEN, WIDTH // 2, HEIGHT // 3, centered=True)
+        win_loop()
+        # Confetti effect or animation goes here
+    else:
+        draw_text("YOU LOST", title_font, WHITE, WIDTH // 2, HEIGHT // 3, centered=True)
+        lose_loop()
 
 
-# Start the game
-ask_for_level()
-pygame.quit()
+def reset_ball_and_paddle():
+    """Reset the ball and paddle to the center positions with random direction, ball on top of paddle."""
+    global ball_x, ball_y, ball_speed_x, ball_speed_y, ball_moving, paddle_x
+
+    # Position the paddle at the center horizontally
+    paddle_x = (WIDTH - paddle_width) // 2  # Center the paddle horizontally
+
+    # Position the ball in the center horizontally and just above the paddle vertically
+    ball_x = WIDTH // 2
+    ball_y = paddle_y - ball_radius * 2  # Ball is right on top of the paddle
+
+    # Randomly choose ball's direction (middle, left, or right) and ensure no downward movement at initialization
+    direction = random.choice(["middle", "left", "right"])
+    if direction == "middle":
+        ball_speed_x = random.choice([-1, 1]) * random.uniform(4, 6)
+        ball_speed_y = random.choice([-1, 1]) * random.uniform(4, 6)
+    elif direction == "left":
+        ball_speed_x = -random.uniform(4, 6)
+        ball_speed_y = random.choice([-1, 1]) * random.uniform(4, 6)
+    elif direction == "right":
+        ball_speed_x = random.uniform(4, 6)
+        ball_speed_y = random.choice([-1, 1]) * random.uniform(4, 6)
+
+    # Ensure the ball does not start moving downwards
+    if ball_speed_y > 0:  # If ball is moving downward, reverse it to move upward
+        ball_speed_y = -ball_speed_y
+
+    ball_moving = False  # Ball is initially not moving until space is pressed
+
+
+# Define the size of the falling obstacles
+obstacle_width = 40  # Adjust the width as needed
+obstacle_height = 40  # Adjust the height as needed
+
+
+def game_loop(level="easy"):
+    global ball_x, ball_y, paddle_x, paddle_y, ball_speed_x, ball_speed_y, ball_moving, lives, score, blocks
+    global falling_obstacles  # Declare global for falling obstacles
+
+    # Initialize the game
+    reset_ball_and_paddle()
+    blocks = create_blocks(level)
+    falling_obstacles = create_falling_obstacles(level)  # Function to create falling obstacles
+
+    ball_moving = True
+    block_movement_start = pygame.time.get_ticks()
+
+    running = True
+    while running:
+        screen.fill(BLACK)
+
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+        # Paddle movement
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            paddle_x = max(paddle_x - paddle_speed, 0)
+        if keys[pygame.K_RIGHT]:
+            paddle_x = min(paddle_x + paddle_speed, WIDTH - paddle_width)
+
+        # Ball movement and collision
+        if ball_moving:
+            ball_x += ball_speed_x
+            ball_y += ball_speed_y
+
+            # Wall collisions for ball 1
+            if ball_x <= 0 or ball_x >= WIDTH - ball_radius * 2:
+                ball_speed_x *= -1
+            if ball_y <= 0:
+                ball_speed_y *= -1
+
+            # Paddle collision for ball 1
+            if (
+                    paddle_x <= ball_x + ball_radius <= paddle_x + paddle_width
+                    and paddle_y <= ball_y + ball_radius * 2 <= paddle_y + paddle_height
+            ):
+                ball_speed_y *= -1
+
+            # Block collision for ball 1
+            for block in blocks[:]:
+                if block["rect"].colliderect(pygame.Rect(ball_x, ball_y, ball_radius * 2, ball_radius * 2)):
+                    ball_speed_y *= -1
+                    blocks.remove(block)
+                    score += block["score"]
+                    break
+
+        # Falling obstacles movement and collision
+        if level in ["intermediate", "hard"]:
+            current_time = pygame.time.get_ticks()
+
+            # Move obstacles every 100ms for both levels
+            if current_time - block_movement_start > 100:
+                block_movement_start = current_time
+                for obstacle in falling_obstacles[:]:
+                    obstacle["rect"].y += obstacle.get("speed_y", 0)
+
+                    # Remove obstacles that go beyond the screen
+                    if obstacle["rect"].y > HEIGHT:
+                        falling_obstacles.remove(obstacle)
+
+                    # Check for collision with the ball
+                    if (
+                            obstacle["rect"].colliderect(pygame.Rect(ball_x, ball_y, ball_radius * 2, ball_radius * 2))
