@@ -188,3 +188,100 @@
       objects.length = 0;
       basket.x = 0;
       score = 0;
+ lives = 3;
+      scoreboard.innerHTML = `Score: ${score} | Lives: ${lives}`;
+      gameOverContainer.style.display = "none";
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft" && basket.x - basket.width / 2 > -1) {
+        basket.x -= basket.speed;
+      } else if (event.key === "ArrowRight" && basket.x + basket.width / 2 < 1) {
+        basket.x += basket.speed;
+      }
+    });
+
+    function spawnObject() {
+      const size = Math.random() * 0.05 + 0.05;
+      const speed = Math.random() * 0.02 + 0.01;
+      objects.push({
+        x: Math.random() * 2 - 1,
+        y: 1.2,
+        size,
+        speed,
+      });
+    }
+
+    function updateScoreHistory() {
+      const listItem = document.createElement("li");
+      listItem.textContent = `Score: ${score}`;
+      historyList.appendChild(listItem);
+      scoreHistory.push(score);
+    }
+
+    function gameOver() {
+      updateScoreHistory();
+      finalScore.textContent = score;
+      gameOverContainer.style.display = "block";
+      canvas.style.display = "none";
+      scoreboard.style.display = "none";
+    }
+
+    function render() {
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(program);
+      gl.uniform4f(uColorLocation, 1, 0, 0, 1);
+
+      if (objects.length === 0 || objects[objects.length - 1].y < 0.5) {
+        spawnObject();
+      }
+
+      objects.forEach((obj, index) => {
+        obj.y -= obj.speed;
+        gl.uniform2f(uTranslationLocation, obj.x, obj.y);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+        if (obj.y < -1) {
+          objects.splice(index, 1);
+          score++;
+          scoreboard.innerHTML = `Score: ${score} | Lives: ${lives}`;
+        }
+
+        if (
+          obj.y < -0.8 &&
+          obj.x > basket.x - basket.width / 2 &&
+          obj.x < basket.x + basket.width / 2
+        ) {
+          objects.splice(index, 1);
+          lives--;
+          scoreboard.innerHTML = `Score: ${score} | Lives: ${lives}`;
+          if (lives === 0) {
+            return gameOver();
+          }
+        }
+      });
+
+      gl.uniform4f(uColorLocation, 0, 1, 0, 1);
+      gl.uniform2f(uTranslationLocation, basket.x, -0.9);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+      if (lives > 0) requestAnimationFrame(render);
+    }
+
+    startButton.addEventListener("click", () => {
+      initGame();
+      welcomeContainer.style.display = "none";
+      canvas.style.display = "block";
+      scoreboard.style.display = "block";
+      requestAnimationFrame(render);
+    });
+
+    restartButton.addEventListener("click", () => {
+      initGame();
+      canvas.style.display = "block";
+      scoreboard.style.display = "block";
+      requestAnimationFrame(render);
+    });
+  </script>
+</body>
+</html>
