@@ -1,52 +1,67 @@
-**BREAKOUT BLOCK GAME**
+**GRAPHICS PROJECT 1&2**
 
-GAME DESCRIPTION
+This repository has two exciting games; 
 
-The game features a paddle, a ball, and a destructible wall of blocks. The goal is to bounce the ball off the paddle and break all the blocks. The game ends when the ball falls below the paddle.
+**1. BREAKOUT GAME**
 
-MAIN CONCEPTS
+A classic arcade game where players control a paddle to break blocks using a bouncing ball. The objective is to destroy all blocks while ensuring the ball doesn't fall below the paddle. With dynamic gameplay, colorful bricks, and increasing difficulty, it’s a test of reflexes and strategy.
 
-1. Wall of Blocks: The blocks are arranged in a grid and have varying strengths. The blocks' colors change depending on their strength.
-2. Paddle Control: The player controls the paddle using the left and right arrow keys.
-3. Ball Movement: The ball bounces off the paddle and walls. If the ball hits a block, the block's strength reduces.
-4. Game Over / Win Conditions: The game ends when the ball falls below the paddle or when all blocks are destroyed.
-Start Game: The player can click anywhere to start the game after a win or loss.
+The Breakout Block Game features a grid of blocks, a paddle, and a bouncing ball. The goal is simple: break all the blocks to win while ensuring the ball doesn’t fall below the paddle. Players use the left and right arrow keys to control the paddle and aim the ball. With increasing difficulty, blocks become harder to break, adding a layer of complexity.
 
-Features
-Dynamic Gameplay: A responsive paddle and bouncing ball with gradually increasing speed.
-Levels and Scoring: Track your score and progress to higher levels as bricks become harder to break.
-Color-Coded Bricks: Bricks change color based on difficulty, enhancing the visual appeal.
-User-Friendly Interface: Displayed score, level, and high score to keep players informed.
-Installation
-To install and run the game, follow these steps:
+Key Features
 
+- Dynamic Gameplay: A responsive paddle and a ball that increases speed over time.
+- Color-Coded Blocks: Blocks change color to represent their strength, enhancing visuals.
+- Scoring and Levels: Tracks your score and progresses you to higher levels.
+- Game Over/Win Conditions: The game ends when the ball falls below the paddle or all blocks are destroyed.
 
-MACHINE REQUIREMENTS AND INSTRUCTIONS
-- install Python 3.12.5
-- install Pygame library
+Installation Instructions
 
-1. Install Python 3 if you don't already have it.
-2. Install the Pygame library:
-
-    ```
-    pip install pygame
-    ```
-3. Clone the repository:
+Ensure Python 3.12.5 is installed on your machine.
+Install Pygame by running:
 ```
-https://github.com/Ogororuth/cg-mini-project-group2.git
+pip install pygame
 ```
-4. Navigate the code, copy the code from blockgame.py, click run and enjoy playing
+Clone the repository:
+```
+git clone https://github.com/Ogororuth/cg-mini-project-group2.git
+```  
+Navigate to the blockgame.py file and run it using Python.
 
+How to Play
 
-INSTRUCTIONS OF THE GAME
-- Use the left or right arrow keys to move the paddle.
-- The goal is to destroy all the blocks by bouncing the ball off the paddle.
-- If the ball falls below the paddle, you lose the game.
-- If all blocks are destroyed, you win the game.
+Use the left and right arrow keys to move the paddle.
+Aim to destroy all the blocks by bouncing the ball off the paddle.
+Avoid letting the ball fall below the paddle.
+When all blocks are destroyed, you win!
 
-How to Start AND ENJOY THE GAME
+**2. WEBGL GAME OF CATCH**
 
-1. After running the game, click the right or left pad on the screen to start.
-2. Use the arrow keys to move the paddle and break all the blocks.
-3. When all blocks are destroyed, you win! If the ball falls off the screen, you lose.
+An interactive browser-based game where the objective is to avoid red squares that fall from the top of the screen. Designed with WebGL, it offers smooth animations, a modern interface, and real-time challenges, making it a fun and accessible game for all.
 
+In this game, the players control the green square by moving the right and left keys on your keyboard and try to avoid the fast paces red squares falling from the top of the screen in as little lives as possible. As the game proceeds, there is an increased pace and less lives to keep you going. 
+
+Key features
+- Dynamic Gameplay: Real-time dodging mechanics with increasing difficulty.
+- WebGL Performance: Smooth animations and responsive controls for a seamless experience.
+- Accessibility: No installation required; play directly from your browser.
+
+How to Play
+
+- Access the game through the hosted web link.
+- Use arrow keys or mouse to control the character and avoid red squares.
+- Stay alive as long as possible to set a high score.
+
+Getting Started
+
+Clone the repository:
+```
+git clone https://github.com/Ogororuth/cg-mini-project-group2.git
+``` 
+Open the index.html file in a WebGL-compatible browser (e.g., Chrome, Firefox).
+Play directly from the browser—no additional setup required!
+
+**3. ACKNOWLEDGEMENTS**
+- Original breakout game developers(https://github.com/MatthewTamYT/Breakout.git) - for providing game base code.
+- WEBGL community- robust documentation on webgl development.
+- Groupmates- valued contribution.
